@@ -20,6 +20,7 @@ This package allows configuring Emacs and a supported terminal emulator to handl
       * [Linux console](#linux-console)
       * [st](#st)
       * [macOS Terminal](#macos-terminal)
+      * [Windows Terminal](#windows-terminal)
       * [Unsupported terminals](#unsupported-terminals)
   * [Similar projects](#similar-projects)
 
@@ -399,6 +400,18 @@ the generated keymap file will contain definitions for all keys that generate a 
 These entries will appear (displayed with the key's hex code instead of the key name) in the terminal emulator's configuration, but cannot be edited there.
 
 You can customize the mapping of Terminal.app modifiers to Emacs modifiers using the respective `customize` group, i.e.: <kbd>M-:</kbd>`(progn (require 'term-keys-terminal-app) (customize-group 'term-keys/terminal-app))`
+
+#### Windows Terminal
+
+To configure Windows Terminal for `term-keys`, use `term-keys/windows-terminal-json` to generate a json file.
+
+```elisp
+(require 'term-keys-windows-terminal)
+(with-temp-file "~/windows-terminal.json"
+  (insert (term-keys/windows-terminal-json)))
+```
+
+Then, add the contents to Windows Terminal settings.
 
 #### Unsupported terminals
 
