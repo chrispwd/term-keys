@@ -37,16 +37,14 @@
 
 (define-widget 'term-keys/ghostty-modifier 'lazy
   "Choice for Ghostty key modifier state flags."
-  :type '(choice (const "Command")
-		 (const "Control")
-		 (const "Option")
-		 (const "Super")
-		 (const "Shift")
-		 (const "Alt")
+  :type '(choice (const :tag "Shift" "shift+")
+		 (const :tag "Ctrl" "ctrl+")
+		 (const :tag "Super" "super+")
+		 (const :tag "Alt" "alt+")
 		 (const :tag "(none)" nil)))
 
 
-(defcustom term-keys/ghostty-modifier-map ["Shift" "Control" "Alt" "Super" "Command" "Option"]
+(defcustom term-keys/ghostty-modifier-map ["shift+" "ctrl+" "alt+" "super+" nil nil]
   "Map of Ghostty modifiers to Emacs modifiers.
 
 This should be a vector of 6 elements, with each element being a
@@ -72,6 +70,18 @@ mapping for this modifier."
 			   (elt term-keys/ghostty-modifier-map n))) ; mapped
 		     (number-sequence 0 (1- (length mods)))))) ; 0..5
 
+(defun term-keys/ghostty-format-key (keymap mods)
+  "Format key and modifiers in kitty syntax.
+
+Returns the kitty key combination string corresponding to the
+KEYMAP and modifier state MODS."
+  (concat
+   (cl-loop for modflag across mods
+	    for index from 0
+	    if modflag
+	    concat
+	    (elt term-keys/ghostty-modifier-map index))
+   (elt keymap 15)))
 
 (defun term-keys/ghostty-format-mods (mods)
   "Format MODS in Ghostty syntax."
@@ -96,7 +106,7 @@ sequences, according to the term-keys configuration."
   (apply #'concat
 	 (term-keys/iterate-keys
 	  (lambda (index keymap mods)
-	    (format "keybind = all:%s=text:%s"
+	    (format "keybind = all:%s=text:%s\n"
 		    (term-keys/ghostty-format-key keymap mods)
 		    (mapconcat
 		     (lambda (c) (format "\\x%02x" c))
